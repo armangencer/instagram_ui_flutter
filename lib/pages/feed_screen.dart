@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instagram_ui_flutter/components/navigation_bar.dart';
 import 'package:instagram_ui_flutter/pages/view_post_screen.dart';
 
 import '../models/post_model.dart';
@@ -11,6 +12,14 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
+  int _selectedTab = 0;
+
+  _changeTab(int index) {
+    setState(() {
+      _selectedTab = index;
+    });
+  }
+
   Widget _buildPost(int index) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -68,18 +77,28 @@ class _FeedScreenState extends State<FeedScreen> {
                         )),
                   ),
                   InkWell(
-                    onDoubleTap: () => print('Like Ppost'),
+                    onDoubleTap: () => print('Like Post'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => ViewPostScreen(
+                                  post: posts[index],
+                                )),
+                      );
+                    },
                     child: Container(
-                      margin: EdgeInsets.all(10),
+                      margin: const EdgeInsets.all(10),
                       width: double.infinity,
                       height: 400,
                       decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
                         image: DecorationImage(
                             image: AssetImage(posts[index].imageUrl),
                             fit: BoxFit.fitWidth),
                         boxShadow: const [
                           BoxShadow(
-                              color: Colors.black38,
+                              blurStyle: BlurStyle.outer,
                               offset: Offset(0, 5),
                               blurRadius: 8),
                         ],
@@ -117,8 +136,8 @@ class _FeedScreenState extends State<FeedScreen> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) =>
-                                                const ViewPostScreen(),
+                                            builder: (_) => ViewPostScreen(
+                                                post: posts[index]),
                                           ),
                                         );
                                       },
@@ -230,7 +249,9 @@ class _FeedScreenState extends State<FeedScreen> {
                     child: CircleAvatar(
                       child: ClipOval(
                         child: Image(
-                          image: AssetImage(stories[index - 1]),
+                          image: AssetImage(
+                            stories[index - 1],
+                          ),
                           height: 60,
                           width: 60,
                           fit: BoxFit.cover,
@@ -242,9 +263,64 @@ class _FeedScreenState extends State<FeedScreen> {
                 itemCount: stories.length + 1,
                 scrollDirection: Axis.horizontal),
           ),
+          const SizedBox(height: 10),
           _buildPost(0),
           _buildPost(1),
         ],
+      ),
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: _selectedTab,
+          onTap: (index) => _changeTab(index),
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.grey,
+          items: [
+            const BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.home,
+                  size: 25,
+                  color: Colors.grey,
+                ),
+                label: ""),
+            const BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.search,
+                  size: 25,
+                  color: Colors.grey,
+                ),
+                label: ""),
+            BottomNavigationBarItem(
+              label: "",
+              icon: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.add_sharp),
+              ),
+            ),
+            const BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.favorite,
+                  size: 25,
+                  color: Colors.grey,
+                ),
+                label: ""),
+            const BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.person,
+                  size: 25,
+                  color: Colors.grey,
+                ),
+                label: ""),
+          ],
+        ),
       ),
     );
   }
